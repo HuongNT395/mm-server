@@ -1,4 +1,4 @@
-tages:
+stages:
   - deploy
 deploy_staging:
   stage: deploy
