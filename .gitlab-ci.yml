@@ -1,0 +1,10 @@
+tages:
+  - deploy
+deploy_staging:
+  stage: deploy
+  script:
+    - ssh root@10.22.0.81 ./deploy-mmc-demo.sh
+  only:
+    - develop
+  tags:
+    - shell-runner-3
