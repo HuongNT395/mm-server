@@ -8,3 +8,6 @@ deploy_staging:
     - develop
   tags:
     - shell-runner-3
+
+#deploy_production:
+  #stage: deploy
