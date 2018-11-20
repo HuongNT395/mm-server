@@ -5,8 +5,9 @@ deploy_staging:
   script:
   - rm -rf ~/go/src/github.com/mattermost/mattermost-server/*
   - cd && scp -r builds/a8b78ce1/0/nal/mmc-server/* go/src/github.com/mattermost/mattermost-server/
-  #- cd go/src/github.com/mattermost/mattermost-webapp && make build
-  #- cd ~/go/src/github.com/mattermost/mattermost-server/ && make build && make package
+  - cp go/src/github.com/mattermost/backup/config.bak go/src/github.com/mattermost/mattermost-server/config/config.json
+  - cd ~/go/src/github.com/mattermost/mattermost-server/ && make build && make package
+  - scp dist/mattermost-team-linux-amd64.tar.gz $SSH_USER@$SRV_STG:~/go/src/github.com/mattermost/mattermost-docker/app/
   only:
     - cicd
   tags:
