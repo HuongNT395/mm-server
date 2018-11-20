@@ -8,6 +8,7 @@ deploy_staging:
   - cp go/src/github.com/mattermost/backup/config.bak go/src/github.com/mattermost/mattermost-server/config/config.json
   - cd ~/go/src/github.com/mattermost/mattermost-server/ && make build && make package
   - scp dist/mattermost-team-linux-amd64.tar.gz $SSH_USER@$SRV_STG:~/go/src/github.com/mattermost/mattermost-docker/app/
+  - ssh $SSH_USER@$SRV_STG ./go/src/github.com/mattermost/mattermost-docker/deploy-mmc-demo.sh
   only:
     - cicd
   tags:
