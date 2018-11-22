@@ -3,7 +3,12 @@ stages:
 deploy_staging:
   stage: deploy
   script:
-    - ssh root@10.22.0.81 sh deploy-mmc-demo.sh
+  - rm -rf ~/go/src/github.com/mattermost/mattermost-server/*
+  - cd && scp -r builds/a8b78ce1/0/nal/mmc-server/* go/src/github.com/mattermost/mattermost-server/
+  - cp go/src/github.com/mattermost/backup/config.bak go/src/github.com/mattermost/mattermost-server/config/config.json
+  - cd ~/go/src/github.com/mattermost/mattermost-server/ && make build && make package
+  - scp dist/mattermost-team-linux-amd64.tar.gz $USER_STG@$SRV_STG:~/go/src/github.com/mattermost/mattermost-docker/app/
+  - ssh $USER_STG@$SRV_STG ./go/src/github.com/mattermost/mattermost-docker/deploy-mmc-demo.sh
   only:
     - develop
   tags:
