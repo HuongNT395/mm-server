@@ -10,7 +10,7 @@ deploy_staging:
   - scp dist/mattermost-team-linux-amd64.tar.gz $USER_STG@$SRV_STG:~/go/src/github.com/mattermost/mattermost-docker/app/
   - ssh $USER_STG@$SRV_STG ./go/src/github.com/mattermost/mattermost-docker/deploy-mmc-demo.sh
   only:
-    - cicd
+    - develop
   tags:
     - shell-runner-3
 
