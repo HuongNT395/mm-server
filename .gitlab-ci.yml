@@ -1,16 +1,22 @@
 stages:
-  - deploy
-deploy_staging:
-  stage: deploy
+  - build-server
+build_server:
+  stage: build-server
   script:
-  - rm -rf ~/go/src/github.com/mattermost/mattermost-server/*
-  - cd && cp -r builds/a8b78ce1/0/nal/mmc-server/* go/src/github.com/mattermost/mattermost-server/
-  - cp go/src/github.com/mattermost/backup/config.bak go/src/github.com/mattermost/mattermost-server/config/config.json
-  - cd ~/go/src/github.com/mattermost/mattermost-server/ && make build && make package
-  - scp dist/mattermost-team-linux-amd64.tar.gz $USER_STG@$SRV_STG:~/go/src/github.com/mattermost/mattermost-docker/app/
-  - ssh $USER_STG@$SRV_STG ./go/src/github.com/mattermost/mattermost-docker/deploy-mmc-demo.sh
+   - sudo rm -rf ~/go/src/github.com/mattermost/mattermost-server
+   - mkdir -p ~/go/src/github.com/mattermost/mattermost-server
+   - cp -r * ~/go/src/github.com/mattermost/mattermost-server/
+   - cp -f /opt/mattermost-ci/config.json ~/go/src/github.com/mattermost/mattermost-server/config/config.json
+   - cd ~/go/src/github.com/mattermost/mattermost-server/
+   - make build
+   - make package
+   - sudo cp dist/mattermost-team-linux-amd64.tar.gz /opt/
+   - cd /opt
+   - sudo tar -zxvf mattermost-team-linux-amd64.tar.gz
+   - sudo id -u mattermost &>/dev/null || sudo useradd --system --user-group mattermost 
+   - sudo chown -R mattermost:mattermost /opt/mattermost
+   - sudo chmod -R g+w /opt/mattermost
   only:
     - develop
   tags:
-    - shell-runner-3
-
+    - mmc-demo-runner
