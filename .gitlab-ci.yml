@@ -1,7 +1,10 @@
 stages:
-  - build-server
-build_server:
-  stage: build-server
+  - make-packages
+  - replace-files
+  - build-image
+  - restart-service
+Make Package:
+  stage: make-packages
   script:
    - sudo rm -rf ~/go/src/github.com/mattermost/mattermost-server
    - mkdir -p ~/go/src/github.com/mattermost/mattermost-server
@@ -10,12 +13,39 @@ build_server:
    - cd ~/go/src/github.com/mattermost/mattermost-server/
    - make build
    - make package
+  only:
+    - develop
+  tags:
+    - mmc-demo-runner
+Replace Files:
+  stage: replace-files
+  script:
+   - cd ~/go/src/github.com/mattermost/mattermost-server/
    - sudo cp dist/mattermost-team-linux-amd64.tar.gz /opt/
    - cd /opt
    - sudo tar -zxvf mattermost-team-linux-amd64.tar.gz
-   - sudo id -u mattermost &>/dev/null || sudo useradd --system --user-group mattermost 
+   - sudo id -u mattermost &>/dev/null || sudo useradd --system --user-group mattermost
    - sudo chown -R mattermost:mattermost /opt/mattermost
    - sudo chmod -R g+w /opt/mattermost
+  only:
+    - develop
+  tags:
+    - mmc-demo-runner
+Build Image:
+  stage: build-image
+  script:
+    - cd /opt/mattermost
+    - sudo docker build -t 10.22.0.82:5000/nal-mmc .
+    - sudo docker push 10.22.0.82:5000/nal-mmc
+  only:
+    - develop
+  tags:
+    - mmc-demo-runner
+Restart Service:
+  stage: restart-service
+  script:
+    - cd ~/mattermost
+    - sudo docker-compose up -d
   only:
     - develop
   tags:
