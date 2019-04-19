@@ -2,6 +2,7 @@ stages:
   - make-packages
   - replace-files
   - build-image
+  - build-image-prod
   - restart-service
 Make Package:
   stage: make-packages
@@ -43,8 +44,8 @@ Build Image:
     - develop
   tags:
     - mmc-demo-runner
-Build Image:
-  stage: build-image
+Build Image Production:
+  stage: build-image-prod
   script:
     - cd /opt/mattermost
     - sudo docker build -t 10.22.0.82:5000/nal-mmc-production .
