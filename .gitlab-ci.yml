@@ -1,0 +1,118 @@
+stages:
+  - make-server-packages
+  - make-webapp-packages
+  - replace-files
+  - upload-files
+  - build-image
+  - build-image-prod
+  - restart-service
+  
+Make Server Package:
+  stage: make-server-packages
+  script:
+   - sudo rm -rf ~/go/src/github.com/mattermost/mattermost-server
+   - mkdir -p ~/go/src/github.com/mattermost/mattermost-server
+   - cp -r * ~/go/src/github.com/mattermost/mattermost-server/
+   - cp -f /opt/mattermost-ci/config.json ~/go/src/github.com/mattermost/mattermost-server/config/config.json
+   - cd ~/go/src/github.com/mattermost/mattermost-server/
+   - make build
+   - make package
+  only:
+    - release/v5.7.0
+    - master
+  tags:
+    - mmc-demo-runner
+
+Make Webapp Package:
+  stage: make-webapp-packages
+  script:
+    - cd ../tmp/mmc-webapp && sudo git pull
+    - sudo git checkout develop
+    - sudo rm -rf ~/go/src/github.com/mattermost/mattermost-webapp
+    - mkdir -p ~/go/src/github.com/mattermost/mattermost-webapp
+    - cp -r * ~/go/src/github.com/mattermost/mattermost-webapp/
+    - cd ~/go/src/github.com/mattermost/mattermost-webapp/
+    - make build
+    - make package
+  only:
+    - release/v5.7.0
+    - master
+  tags:
+    - mmc-demo-runner    
+    
+Replace Files:
+  stage: replace-files
+  script:
+    - sudo cp ~/go/src/github.com/mattermost/mattermost-server/dist/mattermost-team-linux-amd64.tar.gz /opt/
+    - cd /opt/
+    - sudo tar -zxvf mattermost-team-linux-amd64.tar.gz
+    - sudo id -u mattermost &>/dev/null || sudo useradd --system --user-group mattermost
+    - sudo cp -rf ~/go/src/github.com/mattermost/mattermost-webapp/mattermost-webapp.tar.gz /opt/mattermost
+    - cd /opt/mattermost
+    - sudo tar -zxvf mattermost-webapp.tar.gz
+    - sudo chown -R mattermost:mattermost /opt/mattermost
+    - sudo chmod -R g+w /opt/mattermost
+  only:
+    - master
+  tags:
+    - release/v5.7.0
+    - mmc-demo-runner
+    
+Upload files:
+  stage: upload-files
+  script:
+    - TAG=$(git describe $(git rev-list --tags --max-count=1))
+    - BUILD=$(date +%Y%m%d-%H%M)
+    - VERSION=\"$TAG-$BUILD\"
+    - echo $BUILD > /tmp/mmcbuild.txt
+#    - sudo cp -rf ~/go/src/github.com/mattermost/mattermost-server/dist/mattermost-team-linux-amd64.tar.gz /opt/mmc-management
+#    - sudo cp -rf ~/go/src/github.com/mattermost/mattermost-webapp/mattermost-webapp.tar.gz /opt/mmc-management
+    - cd /opt/mattermost && rm -rf *.tar.gz
+    - cd /opt/mmc-management
+    - sudo tar -czvf mmc-$TAG-$BUILD.tar.gz /opt/mattermost/
+    - sudo git add mmc-$TAG-$BUILD.tar.gz
+    - sudo git commit -m "upload new version"
+    - ssh-agent sh -c 'ssh-add ~/.ssh/id_rsa; git push origin master'
+    - curl -k -d "type=core&name=mmc&tags=[$VERSION]" -X POST https://wsmonitor-api.chatops.jp/root/v1/version-images/deploy
+  only:
+    - master
+  tags:
+    - mmc-demo-runner
+
+Build Image:
+  stage: build-image
+  script:
+    - TAG=$(git describe $(git rev-list --tags --max-count=1))
+    - echo $TAG
+    - BUILD=$(cat /tmp/mmcbuild.txt)
+    - cd /opt/mattermost
+    - sudo docker build --no-cache -t 10.22.0.82:5000/nal-mmc:$TAG.$BUILD .
+    - sudo docker push 10.22.0.82:5000/nal-mmc:$TAG.$BUILD
+  only:
+    - release/v5.7.0
+  tags:
+    - mmc-demo-runner
+    
+Build Image Prodution:
+  stage: build-image-prod
+  script:
+    - TAG=$(git describe $(git rev-list --tags --max-count=1))
+    - BUILD=$(cat /tmp/mmcbuild.txt)
+    - cd /opt/mattermost
+    - sudo docker build -t 10.22.0.82:5000/nal-mmc-production:$TAG.$BUILD .
+    - sudo docker push 10.22.0.82:5000/nal-mmc-production:$TAG.$BUILD
+  only:
+    - master
+  tags:
+    - mmc-demo-runner
+    
+Restart Service:
+  stage: restart-service
+  script:
+    - cd ~/mattermost
+    - sudo docker-compose up -d
+  when: manual
+  only:
+    - release/v5.7.0
+  tags:
+    - mmc-demo-runner
