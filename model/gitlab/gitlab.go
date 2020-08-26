@@ -6,7 +6,6 @@ package oauthgitlab
 import (
 	"encoding/json"
 	"io"
-	"strconv"
 	"strings"
 
 	"github.com/mattermost/mattermost-server/v5/einterfaces"
@@ -17,8 +16,8 @@ type GitLabProvider struct {
 }
 
 type GitLabUser struct {
-	Id       int64  `json:"id"`
-	Username string `json:"username"`
+	Id       string `json:"sub"`
+	Username string `json:"preferred_username"`
 	Login    string `json:"login"`
 	Email    string `json:"email"`
 	Name     string `json:"name"`
@@ -76,7 +75,7 @@ func (glu *GitLabUser) ToJson() string {
 }
 
 func (glu *GitLabUser) IsValid() bool {
-	if glu.Id == 0 {
+	if len(glu.Id) == 0 {
 		return false
 	}
 
@@ -88,7 +87,7 @@ func (glu *GitLabUser) IsValid() bool {
 }
 
 func (glu *GitLabUser) getAuthData() string {
-	return strconv.FormatInt(glu.Id, 10)
+	return glu.Id
 }
 
 func (m *GitLabProvider) GetUserFromJson(data io.Reader) *model.User {
