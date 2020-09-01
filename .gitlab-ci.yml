@@ -1,0 +1,86 @@
+stages:
+  - make-webapp-packages
+  - make-server-packages
+  - replace-files
+  - build-image
+  - restart-service
+  
+Make Webapp Package:
+  stage: make-webapp-packages
+  script:
+    - cd ../tmp/mmc-webapp && sudo git pull
+    - sudo git checkout develop
+    - sudo rm -rf ~/go/src/github.com/mattermost/mattermost-webapp
+    - mkdir -p ~/go/src/github.com/mattermost/mattermost-webapp
+    - cp -r * ~/go/src/github.com/mattermost/mattermost-webapp/
+    - cd ~/go/src/github.com/mattermost/mattermost-webapp/
+    - make build
+    - make package
+  only:
+    - release-5.27
+  tags:
+    - mmc-demo-runner   
+  
+Make Server Package:
+  stage: make-server-packages
+  script:
+   - HASH=$(git rev-parse --short HEAD)
+   - echo $HASH > /tmp/build-version.env
+   - echo $HASH
+   - BUILD=$(echo \"build-version\"\:\ \"$HASH\")  
+   - sudo rm -rf ~/go/src/github.com/mattermost/mattermost-server
+   - mkdir -p ~/go/src/github.com/mattermost/mattermost-server
+   - cp -r * ~/go/src/github.com/mattermost/mattermost-server/
+   - cp -f /opt/mattermost-ci/config.json ~/go/src/github.com/mattermost/mattermost-server/config/config.json
+   - cd ~/go/src/github.com/mattermost/mattermost-server/
+   - sed -i "s/.*build-version.*/    ${BUILD}/g" build-version.json       
+   - make build 
+   - make package
+  only:
+    - release-5.27
+  tags:
+    - mmc-demo-runner
+    
+Replace Files:
+  stage: replace-files
+  script:
+    - sudo cp ~/go/src/github.com/mattermost/mattermost-server/dist/mattermost-team-linux-amd64.tar.gz /opt/
+    - cd /opt/
+    - sudo tar -zxvf mattermost-team-linux-amd64.tar.gz
+    - sudo id -u mattermost &>/dev/null || sudo useradd --system --user-group mattermost
+    - sudo cp -rf ~/go/src/github.com/mattermost/mattermost-webapp/mattermost-webapp.tar.gz /opt/mattermost
+    - cd /opt/mattermost
+    - sudo tar -zxvf mattermost-webapp.tar.gz
+    - sudo chown -R mattermost:mattermost /opt/mattermost
+    - sudo chmod -R g+w /opt/mattermost
+  only:
+    - release-5.27
+  tags:
+    - mmc-demo-runner
+    
+Build Image:
+  stage: build-image
+  script:
+    - HASH=$(cat /tmp/build-version.env)
+    - echo $HASH
+    - cd /opt/mattermost
+    - sudo docker build -t asia.gcr.io/chatops2020/nal-mmc-5.27.0:$HASH .
+    - sudo docker push asia.gcr.io/chatops2020/nal-mmc-5.27.0:$HASH
+  only:
+    - release-5.27
+  tags:
+    - mmc-demo-runner
+    
+Restart Service:
+  stage: restart-service
+  script:
+    - cd /opt/mattermost
+    - sudo docker build -t 10.22.0.82:5000/nal-mmc:latest .
+    - sudo docker push 10.22.0.82:5000/nal-mmc:latest
+    - cd ~/mattermost
+    - sudo docker-compose up -d
+  when: manual
+  only:
+    - release-5.27
+  tags:
+    - mmc-demo-runner
