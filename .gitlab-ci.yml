@@ -33,7 +33,8 @@ Make Server Package:
    - cp -r * ~/go/src/github.com/mattermost/mattermost-server/
    - cp -f /opt/mattermost-ci/config.json ~/go/src/github.com/mattermost/mattermost-server/config/config.json
    - cd ~/go/src/github.com/mattermost/mattermost-server/
-   - sed -i "s/.*build-version.*/    ${BUILD}/g" build-version.json       
+   - sed -i "s/.*build-version.*/    ${BUILD}/g" build-version.json
+   - npm install cross-env
    - make build 
    - make package
   only:
