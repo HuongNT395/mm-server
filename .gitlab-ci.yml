@@ -1,4 +1,4 @@
-image: asia.gcr.io/chatops2020/chatops-env:01
+image: asia.gcr.io/chatops2020/chatops-env:02
 stages:
   - make-chatops-packages
   - build-images
