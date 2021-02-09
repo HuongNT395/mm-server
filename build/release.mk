@@ -10,25 +10,26 @@ else
 	env GOOS=linux GOARCH=amd64 $(GO) build -o $(GOBIN)/linux_amd64 $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
 endif
 
-build-osx:
-	@echo Build OSX amd64
-ifeq ($(BUILDER_GOOS_GOARCH),"darwin_amd64")
-	env GOOS=darwin GOARCH=amd64 $(GO) build -o $(GOBIN) $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
-else
-	mkdir -p $(GOBIN)/darwin_amd64
-	env GOOS=darwin GOARCH=amd64 $(GO) build -o $(GOBIN)/darwin_amd64 $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
-endif
+# build-osx:
+# 	@echo Build OSX amd64
+# ifeq ($(BUILDER_GOOS_GOARCH),"darwin_amd64")
+# 	env GOOS=darwin GOARCH=amd64 $(GO) build -o $(GOBIN) $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
+# else
+# 	mkdir -p $(GOBIN)/darwin_amd64
+# 	env GOOS=darwin GOARCH=amd64 $(GO) build -o $(GOBIN)/darwin_amd64 $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
+# endif
 
-build-windows:
-	@echo Build Windows amd64
-ifeq ($(BUILDER_GOOS_GOARCH),"windows_amd64")
-	env GOOS=windows GOARCH=amd64 $(GO) build -o $(GOBIN) $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
-else
-	mkdir -p $(GOBIN)/windows_amd64
-	env GOOS=windows GOARCH=amd64 $(GO) build -o $(GOBIN)/windows_amd64 $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
-endif
+# build-windows:
+# 	@echo Build Windows amd64
+# ifeq ($(BUILDER_GOOS_GOARCH),"windows_amd64")
+# 	env GOOS=windows GOARCH=amd64 $(GO) build -o $(GOBIN) $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
+# else
+# 	mkdir -p $(GOBIN)/windows_amd64
+# 	env GOOS=windows GOARCH=amd64 $(GO) build -o $(GOBIN)/windows_amd64 $(GOFLAGS) -trimpath -ldflags '$(LDFLAGS)' ./...
+# endif
 
-build: build-linux build-windows build-osx
+# build: build-linux build-windows build-osx
+build: build-linux
 
 build-client:
 	@echo Building mattermost web app
