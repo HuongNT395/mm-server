@@ -88,10 +88,10 @@ Deploy Staging:
     - cd chatops && git pull
     - git checkout .
     - VERSION="5.27.0-$HASH-$BUILD"
-    - STATUS=$(/root/miniconda3/bin/python3 devops.py -i  ChatOps-v1.27.26.yml -t core -c webapp -p version commit -v $VERSION $HASH)
+    - STATUS=$(/root/miniconda3/bin/python3 devops.py -i  ChatOps-v1.27.27.yml -t core -c server -p version commit -v $VERSION $HASH)
     - BASEVS=$(echo base_version:\ ${STATUS})
     - sed -i "s/.*base_version.*/${BASEVS}/g" mmc-stg.nal.vn.yml
-    - git add ChatOps-v1.27.26.yml mmc-stg.nal.vn.yml
+    - git add ChatOps-v1.27.27.yml mmc-stg.nal.vn.yml
     - git commit -m "$STATUS"
     - git push
   only:
@@ -107,12 +107,12 @@ Deploy Staging-2:
     - HASH=$(git rev-parse --short HEAD)
     - cd ~/nal-infra-gcp && git pull
     - sh ~/nal-infra-gcp/chatops-stg/connect-ci.sh
-    - cd ~/nal-infra-gcp/chatops-stg/mmc-stg-2.nal.vn/
+    - cd ~/nal-infra-gcp/chatops-stg/aichat-standalone/
     - pwd
-    - sed -i "s/nal-mmc-5.27.*/nal-mmc-5.27:${HASH}/g" dl_mmc-stg-2.yml
-    - /home/gitlab-runner/google-cloud-sdk/bin/kubectl delete -f dl_mmc-stg-2.yml
-    - /home/gitlab-runner/google-cloud-sdk/bin/kubectl create -f dl_mmc-stg-2.yml
-    - git add dl_mmc-stg-2.yml
+    - sed -i "s/nal-mmc-5.27.*/nal-mmc-5.27:${HASH}/g" deployment-client-standalone-chatops.vn.yml
+    - /home/gitlab-runner/google-cloud-sdk/bin/kubectl delete -f deployment-client-standalone-chatops.vn.yml
+    - /home/gitlab-runner/google-cloud-sdk/bin/kubectl create -f deployment-client-standalone-chatops.vn.yml
+    - git add deployment-client-standalone-chatops.vn.yml
     - git commit -m "Deploy chatops $HASH" || true
     - git push origin master || true
     - mkdir -p ~/chatops-tracker && cd ~/chatops-tracker
@@ -120,10 +120,10 @@ Deploy Staging-2:
     - cd chatops && git pull
     - git checkout .
     - VERSION="5.27.0-$HASH-$BUILD"
-    - STATUS=$(/root/miniconda3/bin/python3 devops.py -i ChatOps-v1.27.27.yml -t core -c webapp -p version commit -v $VERSION $HASH)
+    - STATUS=$(/root/miniconda3/bin/python3 devops.py -i ChatOps.yml -t core -c server -p version commit -v $VERSION $HASH)
     - BASEVS=$(echo base_version:\ ${STATUS})
     - sed -i "s/.*base_version.*/${BASEVS}/g" mmc-stg.nal.vn.yml
-    - git add ChatOps-v1.27.27.yml mmc-stg.nal.vn.yml
+    - git add ChatOps.yml mmc-stg.nal.vn.yml
     - git commit -m "$STATUS"
     - git push
   only:
@@ -147,6 +147,17 @@ Deploy demo.chatops.vn:
     - git add mmc-demo-chatops-vn.yml
     - git commit -m "Deploy Demo.chatops.vn $HASH" || true
     - git push origin master || true
+    - mkdir -p ~/chatops-tracker && cd ~/chatops-tracker
+    - git clone git@gitlab.nal.vn:nal/chatops.git || true
+    - cd chatops && git pull
+    - git checkout .
+    - VERSION="5.27.0-$HASH-$BUILD"
+    - STATUS=$(/root/miniconda3/bin/python3 devops.py -i  ChatOps-v1.27.26.yml -t core -c server -p version commit -v $VERSION $HASH)
+    - BASEVS=$(echo base_version:\ ${STATUS})
+    - sed -i "s/.*base_version.*/${BASEVS}/g" mmc-stg.nal.vn.yml
+    - git add ChatOps-v1.27.26.yml demo.chatops.vn.yml
+    - git commit -m "$STATUS"
+    - git push
   when: manual
   only:
   - release-5.27
