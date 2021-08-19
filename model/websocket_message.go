@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/mattermost/mattermost-server/v5/mlog"
 	"io"
 )
 
@@ -129,6 +130,8 @@ func (ev *WebSocketEvent) Add(key string, value interface{}) {
 }
 
 func NewWebSocketEvent(event, teamId, channelId, userId string, omitUsers map[string]bool) *WebSocketEvent {
+	mlog.Error("in NewWebSocketEvent " + event)
+
 	return &WebSocketEvent{Event: event, Data: make(map[string]interface{}),
 		Broadcast: &WebsocketBroadcast{TeamId: teamId, ChannelId: channelId, UserId: userId, OmitUsers: omitUsers}}
 }

@@ -4,6 +4,7 @@
 package wsapi
 
 import (
+	"github.com/mattermost/mattermost-server/v5/mlog"
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
@@ -22,11 +23,14 @@ func (api *API) userTyping(req *model.WebSocketRequest) (map[string]interface{},
 
 	var ok bool
 	var channelId string
+
 	if channelId, ok = req.Data["channel_id"].(string); !ok || !model.IsValidId(channelId) {
+		mlog.Error("da vao dc userTyping 28")
 		return nil, NewInvalidWebSocketParamError(req.Action, "channel_id")
 	}
 
 	if !api.App.SessionHasPermissionToChannel(req.Session, channelId, model.PERMISSION_CREATE_POST) {
+		mlog.Error("da vao dc userTyping 33")
 		return nil, NewInvalidWebSocketParamError(req.Action, "channel_id")
 	}
 

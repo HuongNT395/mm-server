@@ -21,6 +21,8 @@ func (a *App) SendNotifications(post *model.Post, team *model.Team, channel *mod
 	if channel.DeleteAt > 0 {
 		return []string{}, nil
 	}
+	mlog.Info("Starting NewWebSocketEvent asdasdasdasdasdasdasdasdasdasdasdasdasdasdsadasdasdasdasdasd")
+
 
 	pchan := make(chan store.StoreResult, 1)
 	go func() {

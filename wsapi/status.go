@@ -22,6 +22,7 @@ func (api *API) getStatusesByIds(req *model.WebSocketRequest) (map[string]interf
 	var userIds []string
 	if userIds = model.ArrayFromInterface(req.Data["user_ids"]); len(userIds) == 0 {
 		mlog.Error(model.StringInterfaceToJson(req.Data))
+		mlog.Error("da vao dc getStatusesByIds 25")
 		return nil, NewInvalidWebSocketParamError(req.Action, "user_ids")
 	}
 

@@ -29,6 +29,7 @@ func connectWebSocket(c *Context, w http.ResponseWriter, r *http.Request) {
 		c.Err = model.NewAppError("connect", "api.web_socket.connect.upgrade.app_error", nil, "", http.StatusInternalServerError)
 		return
 	}
+	mlog.Error("da vao dc dayyyyyyyyyyy 1234 " + c.App.Session().UserId)
 
 	wc := c.App.NewWebConn(ws, *c.App.Session(), c.App.T, "")
 

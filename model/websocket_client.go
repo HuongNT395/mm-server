@@ -6,6 +6,7 @@ package model
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/mattermost/mattermost-server/v5/mlog"
 	"net/http"
 	"sync/atomic"
 	"time"
@@ -243,6 +244,8 @@ func (wsc *WebSocketClient) Listen() {
 }
 
 func (wsc *WebSocketClient) SendMessage(action string, data map[string]interface{}) {
+	mlog.Error("SendMessage SendMessage SendMessage")
+
 	req := &WebSocketRequest{}
 	req.Seq = wsc.Sequence
 	req.Action = action
