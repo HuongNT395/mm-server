@@ -23,25 +23,29 @@ func (a *App) SessionHasPermissionTo(session model.Session, permission *model.Pe
 }
 
 func (a *App) SessionHasPermissionToTeam(session model.Session, teamId string, permission *model.Permission) bool {
+	mlog.Error("SessionHasPermissionToTeam 26")
 	if teamId == "" {
+		mlog.Error("SessionHasPermissionToTeam 28")
 		return false
 	}
 	if session.IsUnrestricted() {
+		mlog.Error("SessionHasPermissionToTeam 32")
 		return true
 	}
 
 	teamMember := session.GetTeamByTeamId(teamId)
 	if teamMember != nil {
+		mlog.Error("SessionHasPermissionToTeam 38 "  + teamMember.Roles)
 		if a.RolesGrantPermission(teamMember.GetRoles(), permission.Id) {
+			mlog.Error("SessionHasPermissionToTeam 40")
 			return true
 		}
 	}
-
+	mlog.Error("SessionHasPermissionToTeam 44")
 	return a.RolesGrantPermission(session.GetUserRoles(), permission.Id)
 }
 
 func (a *App) SessionHasPermissionToChannel(session model.Session, channelId string, permission *model.Permission) bool {
-	mlog.Error("SessionHasPermissionToChannel 44")
 	if channelId == "" {
 		return false
 	}
@@ -66,7 +70,6 @@ func (a *App) SessionHasPermissionToChannel(session model.Session, channelId str
 	channel, err := a.GetChannel(channelId)
 	if err == nil && channel.TeamId != "" {
 		mlog.Error("SessionHasPermissionToChannel 71  ChannelId " + channelId)
-		mlog.Error("SessionHasPermissionToChannel 71  DisplayName " + channel.DisplayName)
 		return a.SessionHasPermissionToTeam(session, channel.TeamId, permission)
 	}
 
@@ -210,6 +213,7 @@ func (a *App) HasPermissionToUser(askingUserId string, userId string) bool {
 }
 
 func (a *App) RolesGrantPermission(roleNames []string, permissionId string) bool {
+	mlog.Error("RolesGrantPermission 79")
 	roles, err := a.GetRolesByNames(roleNames)
 	if err != nil {
 		// This should only happen if something is very broken. We can't realistically
