@@ -41,10 +41,13 @@ func (a *App) SessionHasPermissionToTeam(session model.Session, teamId string, p
 }
 
 func (a *App) SessionHasPermissionToChannel(session model.Session, channelId string, permission *model.Permission) bool {
+	mlog.Error("SessionHasPermissionToChannel 44")
 	if channelId == "" {
+		mlog.Error("SessionHasPermissionToChannel 46")
 		return false
 	}
 	if session.IsUnrestricted() {
+		mlog.Error("SessionHasPermissionToChannel 50")
 		return true
 	}
 
@@ -52,9 +55,12 @@ func (a *App) SessionHasPermissionToChannel(session model.Session, channelId str
 
 	var channelRoles []string
 	if err == nil {
+		mlog.Error("SessionHasPermissionToChannel 58")
 		if roles, ok := ids[channelId]; ok {
+			mlog.Error("SessionHasPermissionToChannel 60")
 			channelRoles = strings.Fields(roles)
 			if a.RolesGrantPermission(channelRoles, permission.Id) {
+				mlog.Error("SessionHasPermissionToChannel 63")
 				return true
 			}
 		}
@@ -62,13 +68,15 @@ func (a *App) SessionHasPermissionToChannel(session model.Session, channelId str
 
 	channel, err := a.GetChannel(channelId)
 	if err == nil && channel.TeamId != "" {
+		mlog.Error("SessionHasPermissionToChannel 71")
 		return a.SessionHasPermissionToTeam(session, channel.TeamId, permission)
 	}
 
 	if err != nil && err.StatusCode == http.StatusNotFound {
+		mlog.Error("SessionHasPermissionToChannel 76")
 		return false
 	}
-
+	mlog.Error("SessionHasPermissionToChannel 79")
 	return a.SessionHasPermissionTo(session, permission)
 }
 
