@@ -165,12 +165,9 @@ func (a *App) HubUnregister(webConn *WebConn) {
 }
 
 func (s *Server) Publish(message *model.WebSocketEvent) {
-	mlog.Error("in Publish 166")
-
 	if s.Metrics != nil {
 		s.Metrics.IncrementWebsocketEvent(message.EventType())
 	}
-	mlog.Error("in Publish 171")
 
 	s.PublishSkipClusterSend(message)
 
@@ -192,8 +189,6 @@ func (s *Server) Publish(message *model.WebSocketEvent) {
 
 		s.Cluster.SendClusterMessage(cm)
 	}
-	mlog.Error("in Publish 193")
-
 }
 
 func (a *App) Publish(message *model.WebSocketEvent) {
@@ -203,17 +198,13 @@ func (a *App) Publish(message *model.WebSocketEvent) {
 }
 
 func (s *Server) PublishSkipClusterSend(message *model.WebSocketEvent) {
-	mlog.Error("in PublishSkipClusterSend 202")
-
 	if message.GetBroadcast().UserId != "" {
-		mlog.Error("in PublishSkipClusterSend 205")
 
 		hub := s.GetHubForUserId(message.GetBroadcast().UserId)
 		if hub != nil {
 			hub.Broadcast(message)
 		}
 	} else {
-		mlog.Error("in PublishSkipClusterSend 212")
 		for _, hub := range s.hubs {
 			hub.Broadcast(message)
 		}
@@ -369,18 +360,15 @@ func (h *Hub) Broadcast(message *model.WebSocketEvent) {
 	// fixed once the the wsapi cyclic dependency with server/app goes away.
 	// And possibly, we can look into doing the hub initialization inside
 	// NewServer itself.
-	mlog.Error("in Broadcast 368")
 
 	if h != nil && message != nil {
-		mlog.Error("in Broadcast 371")
 
 		if metrics := h.app.Metrics(); metrics != nil {
-			mlog.Error("in Broadcast 374")
 			metrics.IncrementWebSocketBroadcastBufferSize(strconv.Itoa(h.connectionIndex), 1)
 		}
 		select {
-		case h.broadcast <- message: 			mlog.Error("in Broadcast 378")
-		case <-h.stop: 			mlog.Error("in Broadcast 374")
+		case h.broadcast <- message:
+		case <-h.stop:
 		}
 	}
 }
