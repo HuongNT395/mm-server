@@ -225,6 +225,7 @@ func (a *App) RolesGrantPermission(roleNames []string, permissionId string) bool
 
 		permissions := role.Permissions
 		for _, permission := range permissions {
+			mlog.Error("RolesGrantPermission 228 " + permission)
 			if permission == permissionId {
 				mlog.Error("RolesGrantPermission 229 return true")
 				return true
