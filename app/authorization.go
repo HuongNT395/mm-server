@@ -41,7 +41,7 @@ func (a *App) SessionHasPermissionToTeam(session model.Session, teamId string, p
 			return true
 		}
 	}
-	mlog.Error("SessionHasPermissionToTeam 44")
+	mlog.Error("SessionHasPermissionToTeam 44" )
 	return a.RolesGrantPermission(session.GetUserRoles(), permission.Id)
 }
 
@@ -226,11 +226,13 @@ func (a *App) RolesGrantPermission(roleNames []string, permissionId string) bool
 		permissions := role.Permissions
 		for _, permission := range permissions {
 			if permission == permissionId {
+				mlog.Error("RolesGrantPermission 229 return true")
 				return true
 			}
 		}
 	}
 
+	mlog.Error("RolesGrantPermission 235 return false")
 	return false
 }
 
