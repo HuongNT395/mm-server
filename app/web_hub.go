@@ -106,12 +106,9 @@ func (a *App) invalidateCacheForWebhook(webhookId string) {
 }
 
 func (a *App) InvalidateWebConnSessionCacheForUser(userId string) {
-	mlog.Error("InvalidateWebConnSessionCacheForUser userId" + userId)
 
 	hub := a.GetHubForUserId(userId)
-	mlog.Error("InvalidateWebConnSessionCacheForUser hub" + string(hub.connectionIndex))
 	if hub != nil {
-		mlog.Error("InvalidateWebConnSessionCacheForUser 114" )
 		hub.InvalidateUser(userId)
 	}
 }
@@ -283,6 +280,7 @@ func (a *App) InvalidateCacheForUser(userId string) {
 
 	a.Srv().Store.User().InvalidateProfilesInChannelCacheByUser(userId)
 	a.Srv().Store.User().InvalidateProfileCacheForUser(userId)
+	mlog.Error("InvalidateCacheForUser userId" + userId)
 
 	if a.Cluster() != nil {
 		msg := &model.ClusterMessage{

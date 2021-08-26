@@ -209,6 +209,8 @@ func (a *App) HasPermissionToUser(askingUserId string, userId string) bool {
 }
 
 func (a *App) RolesGrantPermission(roleNames []string, permissionId string) bool {
+	a.InvalidateCacheForUser(a.session.UserId)
+
 	//mlog.Error("RolesGrantPermission 79")
 	roles, err := a.GetRolesByNames(roleNames)
 	if err != nil {
@@ -234,7 +236,6 @@ func (a *App) RolesGrantPermission(roleNames []string, permissionId string) bool
 			}
 		}
 	}
-	a.InvalidateWebConnSessionCacheForUser(a.session.UserId)
 	mlog.Error("RolesGrantPermission 235 return false")
 	return false
 }
