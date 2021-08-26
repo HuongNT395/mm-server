@@ -106,8 +106,12 @@ func (a *App) invalidateCacheForWebhook(webhookId string) {
 }
 
 func (a *App) InvalidateWebConnSessionCacheForUser(userId string) {
+	mlog.Error("InvalidateWebConnSessionCacheForUser userId" + userId)
+
 	hub := a.GetHubForUserId(userId)
+	mlog.Error("InvalidateWebConnSessionCacheForUser hub" + string(hub.connectionIndex))
 	if hub != nil {
+		mlog.Error("InvalidateWebConnSessionCacheForUser 114" )
 		hub.InvalidateUser(userId)
 	}
 }
@@ -144,6 +148,7 @@ func (a *App) GetHubForUserId(userId string) *Hub {
 
 // HubRegister registers a connection to a hub.
 func (a *App) HubRegister(webConn *WebConn) {
+	mlog.Error("HubRegister 147")
 	hub := a.GetHubForUserId(webConn.UserId)
 	if hub != nil {
 		if metrics := a.Metrics(); metrics != nil {
