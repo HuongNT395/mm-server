@@ -222,10 +222,12 @@ func (a *App) RolesGrantPermission(roleNames []string, permissionId string) bool
 		if role.DeleteAt != 0 {
 			continue
 		}
-
+		/**/
 		permissions := role.Permissions
 		for _, permission := range permissions {
-			mlog.Error("RolesGrantPermission 228 " + permission)
+			mlog.Error("RolesGrantPermission 228 permission " + permission)
+			mlog.Error("RolesGrantPermission 228 permissionId" + permissionId)
+
 			if permission == permissionId {
 				mlog.Error("RolesGrantPermission 229 return true")
 				return true
