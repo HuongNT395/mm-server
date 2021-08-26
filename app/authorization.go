@@ -23,21 +23,21 @@ func (a *App) SessionHasPermissionTo(session model.Session, permission *model.Pe
 }
 
 func (a *App) SessionHasPermissionToTeam(session model.Session, teamId string, permission *model.Permission) bool {
-	mlog.Error("SessionHasPermissionToTeam 26")
+	//mlog.Error("SessionHasPermissionToTeam 26")
 	if teamId == "" {
-		mlog.Error("SessionHasPermissionToTeam 28")
+		//mlog.Error("SessionHasPermissionToTeam 28")
 		return false
 	}
 	if session.IsUnrestricted() {
-		mlog.Error("SessionHasPermissionToTeam 32")
+		//mlog.Error("SessionHasPermissionToTeam 32")
 		return true
 	}
 
 	teamMember := session.GetTeamByTeamId(teamId)
 	if teamMember != nil {
-		mlog.Error("SessionHasPermissionToTeam 38 "  + teamMember.Roles)
+		//mlog.Error("SessionHasPermissionToTeam 38 "  + teamMember.Roles)
 		if a.RolesGrantPermission(teamMember.GetRoles(), permission.Id) {
-			mlog.Error("SessionHasPermissionToTeam 40")
+			//mlog.Error("SessionHasPermissionToTeam 40")
 			return true
 		}
 	}
@@ -209,7 +209,7 @@ func (a *App) HasPermissionToUser(askingUserId string, userId string) bool {
 }
 
 func (a *App) RolesGrantPermission(roleNames []string, permissionId string) bool {
-	mlog.Error("RolesGrantPermission 79")
+	//mlog.Error("RolesGrantPermission 79")
 	roles, err := a.GetRolesByNames(roleNames)
 	if err != nil {
 		// This should only happen if something is very broken. We can't realistically
@@ -225,16 +225,16 @@ func (a *App) RolesGrantPermission(roleNames []string, permissionId string) bool
 		/**/
 		permissions := role.Permissions
 		for _, permission := range permissions {
-			mlog.Error("RolesGrantPermission 228 permission " + permission)
-			mlog.Error("RolesGrantPermission 228 permissionId" + permissionId)
+			//mlog.Error("RolesGrantPermission 228 permission " + permission)
+			//mlog.Error("RolesGrantPermission 228 permissionId" + permissionId)
 
 			if permission == permissionId {
-				mlog.Error("RolesGrantPermission 229 return true")
+				//mlog.Error("RolesGrantPermission 229 return true")
 				return true
 			}
 		}
 	}
-
+	a.InvalidateWebConnSessionCacheForUser(a.session.UserId)
 	mlog.Error("RolesGrantPermission 235 return false")
 	return false
 }
