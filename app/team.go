@@ -394,7 +394,7 @@ func (a *App) UpdateTeamMemberSchemeRoles(teamId string, userId string, isScheme
 	if err != nil {
 		return nil, err
 	}
-
+	mlog.Info("======================================[UpdateTeamMemberSchemeRoles]====================")
 	a.ClearSessionCacheForUser(userId)
 
 	a.sendUpdatedMemberRoleEvent(userId, member)

@@ -1417,7 +1417,7 @@ func (a *App) UpdateUserRoles(userId string, newRoles string, sendWebSocketEvent
 		schan <- store.StoreResult{Data: id, NErr: err}
 		close(schan)
 	}()
-
+	mlog.Info("======================================[UpdateUserRoles]====================")
 	result := <-uchan
 	if result.Err != nil {
 		return nil, result.Err
